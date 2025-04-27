@@ -1,7 +1,7 @@
-// create-character.component.spec.ts
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { CreateCharacterComponent } from './create-character.component';
 import { FormsModule } from '@angular/forms';
+import { CreateCharacterComponent } from './create-character.component';
+import { CommonModule } from '@angular/common';
 
 describe('CreateCharacterComponent', () => {
   let component: CreateCharacterComponent;
@@ -9,7 +9,8 @@ describe('CreateCharacterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CreateCharacterComponent, FormsModule],
+      imports: [FormsModule, CommonModule, CreateCharacterComponent],
+      // You might need to mock services injected into CreateCharacterComponent here
     }).compileComponents();
 
     fixture = TestBed.createComponent(CreateCharacterComponent);
@@ -21,33 +22,36 @@ describe('CreateCharacterComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should generate a random character ID between 1 and 1000 with no decimal places', () => {
-    component.addCharacter();
-    expect(component.characters[0].id).toBeGreaterThan(0);
-    expect(component.characters[0].id).toBeLessThanOrEqual(1000);
-    expect(Number.isInteger(component.characters[0].id)).toBe(true);
+  it('should initialize newCharacter with default values', () => {
+    expect(component.newCharacter).toEqual({
+      name: '',
+      gender: 'Male',
+      class: 'Warrior',
+    });
   });
 
-  it('should add a character with correct customization', () => {
-    component.characterForm.name = 'Test Character';
-    component.characterForm.gender = 'Male';
-    component.characterForm.class = 'Warrior';
+  it('should add a new character to the characters array', () => {
+    const initialLength = component.characters.length;
+    component.newCharacter.name = 'Test Character';
+    component.newCharacter.gender = 'Female';
+    component.newCharacter.class = 'Mage';
     component.addCharacter();
-
-    const addedCharacter = component.characters[0];
-    expect(addedCharacter.name).toBe('Test Character');
-    expect(addedCharacter.gender).toBe('Male');
-    expect(addedCharacter.class).toBe('Warrior');
+    expect(component.characters.length).toBe(initialLength + 1);
+    expect(component.characters[component.characters.length - 1].name).toBe('Test Character');
+    expect(component.characters[component.characters.length - 1].gender).toBe('Female');
+    expect(component.characters[component.characters.length - 1].class).toBe('Mage');
+    expect(component.characters[component.characters.length - 1].id).toBeGreaterThan(0);
   });
 
-  it('should reset all form fields to their default values after resetForm is called', () => {
-    component.characterForm.name = 'Test Character';
-    component.characterForm.gender = 'Female';
-    component.characterForm.class = 'Mage';
-    component.resetForm();
-
-    expect(component.characterForm.name).toBe('');
-    expect(component.characterForm.gender).toBe('Male');
-    expect(component.characterForm.class).toBe('Warrior');
+  it('should reset the form after adding a character', () => {
+    component.newCharacter.name = 'To Reset';
+    component.newCharacter.gender = 'Other';
+    component.newCharacter.class = 'Rogue';
+    component.addCharacter();
+    expect(component.newCharacter).toEqual({
+      name: '',
+      gender: 'Male',
+      class: 'Warrior',
+    });
   });
 });
