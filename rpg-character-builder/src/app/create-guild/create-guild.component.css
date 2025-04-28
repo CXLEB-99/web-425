@@ -1,0 +1,40 @@
+.create-guild-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+  
+  label {
+    display: block;
+    margin: 0.5rem 0;
+  }
+  
+  input[type="text"],
+  textarea,
+  select {
+    width: 100%;
+    padding: 0.4rem;
+    margin-top: 0.2rem;
+    box-sizing: border-box;
+  }
+  
+  fieldset {
+    margin: 1rem 0;
+    border: 1px solid #ddd;
+    padding: 0.5rem;
+  }
+  
+  .terms {
+    margin: 1rem 0;
+  }
+  
+  button {
+    margin-top: 1rem;
+  }
+  
+  section {
+    margin-top: 2rem;
+    border-top: 1px solid #ccc;
+    padding-top: 1rem;
+  }
+  

@@ -1,0 +1,65 @@
+<div class="create-guild-container">
+    <h2>Create a New Guild</h2>
+    <form [formGroup]="guildForm" (ngSubmit)="onSubmit()">
+  
+      <label>
+        Guild Name
+        <input type="text" formControlName="guildName" />
+      </label>
+      <div *ngIf="guildForm.get('guildName')?.invalid && guildForm.touched">
+        Name is required.
+      </div>
+  
+      <label>
+        Description
+        <textarea formControlName="description"></textarea>
+      </label>
+      <div *ngIf="guildForm.get('description')?.invalid && guildForm.touched">
+        Description is required.
+      </div>
+  
+      <label>
+        Type
+        <select formControlName="type">
+          <option value="" disabled>Select one</option>
+          <option *ngFor="let t of types" [value]="t">{{ t }}</option>
+        </select>
+      </label>
+      <div *ngIf="guildForm.get('type')?.invalid && guildForm.touched">
+        Type is required.
+      </div>
+  
+      <fieldset>
+        <legend>Notification Preference</legend>
+        <label *ngFor="let n of notifications">
+          <input type="radio" [value]="n" formControlName="notificationPreference" />
+          {{ n }}
+        </label>
+      </fieldset>
+      <div *ngIf="guildForm.get('notificationPreference')?.invalid && guildForm.touched">
+        Choose one.
+      </div>
+  
+      <label class="terms">
+        <input type="checkbox" formControlName="acceptTerms" />
+        I accept the terms and conditions
+      </label>
+      <div *ngIf="guildForm.get('acceptTerms')?.invalid && guildForm.touched">
+        You must accept terms.
+      </div>
+  
+      <button type="submit" [disabled]="guildForm.invalid">Create Guild</button>
+    </form>
+  
+    <section *ngIf="guilds.length">
+      <h3>Created Guilds</h3>
+      <ul>
+        <li *ngFor="let g of guilds">
+          <strong>{{ g.guildName }}</strong> ({{ g.type }}) –
+          Notify via {{ g.notificationPreference }}<br />
+          {{ g.description }}
+        </li>
+      </ul>
+    </section>
+  </div>
+  
