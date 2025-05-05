@@ -1,9 +1,10 @@
 // create-character.component.ts
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { CharacterListComponent } from '../character-list/character-list.component';
 
-interface Character {
+export interface Character {
   id: number;
   name: string;
   gender: string;
@@ -13,12 +14,18 @@ interface Character {
 @Component({
   selector: 'app-create-character',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [
+    FormsModule,
+    CommonModule,
+
+    CharacterListComponent
+  ],
   template: `
     <div class="create-character-container">
       <form #characterForm="ngForm" (ngSubmit)="addCharacter()">
         <h2>Create Character</h2>
 
+        <!-- Name -->
         <label for="name">Name:</label>
         <input
           id="name"
@@ -27,6 +34,7 @@ interface Character {
           [(ngModel)]="newCharacter.name"
         />
 
+        <!-- Gender -->
         <label for="gender">Gender:</label>
         <select
           id="gender"
@@ -39,6 +47,7 @@ interface Character {
           <option>Other</option>
         </select>
 
+        <!-- Class -->
         <label for="class">Class:</label>
         <select
           id="class"
@@ -54,27 +63,10 @@ interface Character {
         <button type="submit">Create Character</button>
       </form>
 
+      <!-- Delegate list rendering -->
       <div class="character-list">
         <h2>Created Characters</h2>
-        <table *ngIf="characters.length">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Gender</th>
-              <th>Class</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let c of characters">
-              <td>{{ c.id }}</td>
-              <td>{{ c.name }}</td>
-              <td>{{ c.gender }}</td>
-              <td>{{ c.class }}</td>
-            </tr>
-          </tbody>
-        </table>
-        <p *ngIf="!characters.length">No characters created yet.</p>
+        <app-character-list [characters]="characters"></app-character-list>
       </div>
     </div>
   `,
@@ -85,45 +77,16 @@ interface Character {
         justify-content: space-between;
         gap: 20px;
       }
-
-      form {
-        flex: 1;
-      }
-
-      .character-list {
-        flex: 1;
-      }
-
-      label,
-      input,
-      select,
-      button {
-        display: block;
-        margin-bottom: 10px;
-      }
-
-      table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-
-      th,
-      td {
-        border: 1px solid #ddd;
-        padding: 8px;
-        text-align: left;
-      }
-
-      th {
-        background-color: #f2f2f2;
-      }
+      form, .character-list { flex: 1; }
+      label, input, select, button { display: block; margin-bottom: 10px; }
     `,
   ],
 })
 export class CreateCharacterComponent {
+  @Output() characterCreated = new EventEmitter<Character>();
+
   characters: Character[] = [];
 
-  // model for the form; renamed to avoid collision with #characterForm
   newCharacter: Omit<Character, 'id'> = {
     name: '',
     gender: 'Male',
@@ -131,15 +94,24 @@ export class CreateCharacterComponent {
   };
 
   addCharacter() {
+    // generate a random id
     const c: Character = {
       id: Math.floor(Math.random() * 1000) + 1,
       ...this.newCharacter,
     };
+
+    // update local list
     this.characters.push(c);
+
+    // notify any parent/listener
+    this.characterCreated.emit(c);
+
+    // clear form
     this.resetForm();
   }
 
-  resetForm() {
+  /** Reset form back to defaults */
+  private resetForm() {
     this.newCharacter = {
       name: '',
       gender: 'Male',

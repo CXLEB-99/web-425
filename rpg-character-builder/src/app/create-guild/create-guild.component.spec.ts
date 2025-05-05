@@ -9,8 +9,7 @@ describe('CreateGuildComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CreateGuildComponent],
-      imports: [ReactiveFormsModule, FormsModule]
+      imports: [ReactiveFormsModule, FormsModule, CreateGuildComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(CreateGuildComponent);
@@ -28,36 +27,40 @@ describe('CreateGuildComponent', () => {
 
   it('acceptTerms must be checked', () => {
     component.guildForm.patchValue({
-      guildName: 'My Guild',
+      name: 'My Guild',
       description: 'Just testing',
       type: 'Casual',
       notificationPreference: 'Email',
       acceptTerms: false
     });
+
     expect(component.guildForm.valid).toBeFalse();
     expect(component.guildForm.get('acceptTerms')!.hasError('required')).toBeTrue();
   });
 
   it('form should be valid when all required fields are filled and terms accepted', () => {
     component.guildForm.patchValue({
-      guildName: 'My Guild',
+      name: 'My Guild',
       description: 'Just testing',
       type: 'Competitive',
       notificationPreference: 'SMS',
       acceptTerms: true
     });
+
     expect(component.guildForm.valid).toBeTrue();
   });
 
   it('should call onSubmit and add guild on valid submit', () => {
     spyOn(component, 'onSubmit').and.callThrough();
+
     component.guildForm.setValue({
-      guildName: 'Testers',
+      name: 'Testers',
       description: 'QA heroes',
       type: 'Educational',
       notificationPreference: 'In-App',
       acceptTerms: true
     });
+
     fixture.detectChanges();
 
     const formEl = fixture.debugElement.query(By.css('form'));
@@ -65,6 +68,6 @@ describe('CreateGuildComponent', () => {
 
     expect(component.onSubmit).toHaveBeenCalled();
     expect(component.guilds.length).toBe(1);
-    expect(component.guilds[0].guildName).toBe('Testers');
+    expect(component.guilds[0].name).toBe('Testers');
   });
 });
